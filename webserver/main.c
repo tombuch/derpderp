@@ -7,8 +7,11 @@
 #include <unistd.h>
 #include "socket.h"
 
+#define BUFF_SIZE 1024
+
+
 void	welcome_client(int socket_client){
-  char welcome[1024];
+  char welcome[BUFF_SIZE];
   int fd;
   int n = 0;
   
@@ -18,7 +21,7 @@ void	welcome_client(int socket_client){
       perror("open Welcome\n");
     return;
     }
-  while ((n = read(fd, welcome, 1024)) > 0){
+  while ((n = read(fd, welcome, BUFF_SIZE)) > 0){
     write(socket_client, &welcome, n);
   }
   close(fd);
@@ -26,9 +29,9 @@ void	welcome_client(int socket_client){
 
 void	answer(int socket_client){
   int n = 0;
-  char buffer[1024];
+  char buffer[BUFF_SIZE];
   
-  while ((n = read(socket_client, buffer, 1024)) > 0){
+  while ((n = read(socket_client, buffer, BUFF_SIZE)) > 0){
       write(socket_client, &buffer, n);
     }
 }
