@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
+#include <stdlib.h>
 #include "socket.h"
 
 
@@ -47,7 +48,8 @@ void initialiser_signaux(void){
 int	main(){
   int socket_serveur;
   int socket_client;
-
+  pid_t pid;
+  
   initialiser_signaux();
   socket_serveur = creer_serveur(8080);
   if (socket_serveur == -1)
@@ -57,9 +59,13 @@ int	main(){
       perror("socket_client");
       return -1;
     }
-    welcome_client(socket_client);
-    answer(socket_client);
-    close(socket_client);
+    pid = fork();
+    if (pid == 0){
+      welcome_client(socket_client);
+      answer(socket_client);
+      close(socket_client);
+      exit(EXIT_SUCCESS);
+    }
   }
   return 0;
 }
