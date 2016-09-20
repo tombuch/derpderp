@@ -36,5 +36,6 @@ int	main(){
     return -1;
   }
   welcome_client(socket_client);
+  close (socket_client);
   return 0;
 }
