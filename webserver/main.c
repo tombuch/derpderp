@@ -19,7 +19,17 @@ void	welcome_client(int socket_client){
     return;
     }
   while ((n = read(fd, welcome, 1024)) > 0){
-      write(socket_client, &welcome, n);
+    write(socket_client, &welcome, n);
+  }
+  close(fd);
+}
+
+void	answer(int socket_client){
+  int n = 0;
+  char buffer[1024];
+  
+  while ((n = read(socket_client, buffer, 1024)) > 0){
+      write(socket_client, &buffer, n);
     }
 }
 
@@ -30,12 +40,15 @@ int	main(){
   socket_serveur = creer_serveur(8080);
   if (socket_serveur == -1)
     return -1;
-  socket_client = accept(socket_serveur, NULL,NULL);
-  if (socket_client == -1){
-    perror("socket_client");
-    return -1;
+  
+  while((socket_client = accept(socket_serveur, NULL,NULL)) > 0){
+    if (socket_client == -1){
+      perror("socket_client");
+      return -1;
+    }
+    welcome_client(socket_client);
+    answer(socket_client);
+    close(socket_client);
   }
-  welcome_client(socket_client);
-  close (socket_client);
   return 0;
 }
