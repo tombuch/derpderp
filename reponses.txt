@@ -8,7 +8,7 @@ Alban Tartar
 	On ne peut pas relancer le serveur tout de suite parce que les sockets ne sont pas fermes.
 
 	/*/Question2/*/
-	Il y a bien le serveur qui écoute sur le port :8080.
+	Il y a bien le serveur qui ecoute sur le port :8080.
 	
 
 	/*/Question3/*/
