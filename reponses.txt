@@ -15,4 +15,4 @@ Alban Tartar
 	On obtient une erreur telnet : Unable to connect to remote host: connection refused parce que l'adresse envoye par telnet est une adresse ipv6 
 
 	/*/Question4/*/
-	Le deuxieme client ne peut pas se connecter, la gestion de plusieurs clients n'est pas encore pris en charge par le serveur.
+	Le deuxieme client n'as pas de réponse du serveur,  la gestion de plusieurs clients n'est pas encore pris en charge par le serveur.
