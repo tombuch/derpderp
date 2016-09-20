@@ -1,14 +1,18 @@
 --DerpDerp--
+Thomas Buchard
+Alban Tartar
 
 ///Chapitre3///
 
 	/*/Question1/*/
-
+	On ne peut pas relancer le serveur tout de suite parce que les sockets ne sont pas fermes.
 
 	/*/Question2/*/
-
+	Il y a bien le serveur qui écoute sur le port :8080.
+	
 
 	/*/Question3/*/
-
+	On obtient une erreur telnet : Unable to connect to remote host: connection refused parce que l'adresse envoye par telnet est une adresse ipv6 
 
 	/*/Question4/*/
+	Le deuxieme client ne peut pas se connecter, la gestion de plusieurs clients n'est pas encore pris en charge par le serveur.
