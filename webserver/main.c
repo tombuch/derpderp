@@ -14,10 +14,10 @@
 #define BUFF_SIZE 1024
 
 
-void	welcome_client(int socket_client){
+void	welcome_client(FILE  *socket_client){
   char welcome[BUFF_SIZE];
   int fd;
-  int n = 0;
+  FILE *f;
   
   fd = open("ressources/Welcome", O_RDONLY);
   if (fd == -1)
@@ -25,18 +25,23 @@ void	welcome_client(int socket_client){
       perror("open Welcome\n");
     return;
     }
-  while ((n = read(fd, welcome, BUFF_SIZE)) > 0){
-    write(socket_client, &welcome, n);
-  }
+  f = fdopen(fd, "r");
+  if (f == NULL)
+    {
+      perror("fopen Welcome\n");
+    }
+  while (fgets(welcome, BUFF_SIZE, f) != NULL){
+    fprintf(socket_client, "%s", welcome);
+    }
+  fclose(f);
   close(fd);
 }
 
-void	answer(int socket_client){
-  int n = 0;
+void	answer(FILE  *socket_client){
   char buffer[BUFF_SIZE];
-  
-  while ((n = read(socket_client, buffer, BUFF_SIZE)) > 0){
-      write(socket_client, &buffer, n);
+
+  while (fgets(buffer, BUFF_SIZE, socket_client) != NULL){
+    fprintf(socket_client, "<Pawnee>%s", buffer);
     }
 }
 
@@ -72,6 +77,7 @@ int	main(){
   int socket_serveur;
   int socket_client;
   pid_t pid;
+  FILE *f;
   
   initialiser_signaux();
   socket_serveur = creer_serveur(8080);
@@ -82,10 +88,15 @@ int	main(){
       perror("socket_client");
       return -1;
     }
+    if (( f = fdopen(socket_client, "w+")) == NULL){
+      perror("fdopenclient");
+      return -1;
+    }
     pid = fork();
     if (pid == 0){
-      welcome_client(socket_client);
-      answer(socket_client);
+      welcome_client(f);
+      answer(f);
+      fclose(f);
       close(socket_client);
       exit(EXIT_SUCCESS);
     }
