@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
@@ -39,10 +40,32 @@ void	answer(int socket_client){
     }
 }
 
-void initialiser_signaux(void){
+void traitement_signal(int sig)
+{
+  int status;
+
+  if (sig == SIGCHLD){
+    if (waitpid(-1, &status, WNOHANG) == -1){
+      perror("waitpid");
+    }
+  }
+}
+
+void initialiser_signaux(void)
+{
+  struct sigaction sa ;
+  sa.sa_handler = traitement_signal;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = SA_RESTART;
+  if (sigaction(SIGCHLD, &sa, NULL) == -1)
+    {
+      perror ("sigaction(SIGCHLD)");
+    }
   if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
     perror("signal");
 }
+
+
 
 
 int	main(){
