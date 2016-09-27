@@ -41,7 +41,7 @@ void	answer(FILE  *socket_client){
   char buffer[BUFF_SIZE];
 
   while (fgets(buffer, BUFF_SIZE, socket_client) != NULL){
-    fprintf(socket_client, "<Pawnee>%s", buffer);
+    fprintf(stdout, "<Pawnee>%s", buffer);
     }
 }
 
@@ -94,12 +94,14 @@ int	main(){
     }
     pid = fork();
     if (pid == 0){
-      welcome_client(f);
+      //welcome_client(f);
       answer(f);
       fclose(f);
       close(socket_client);
       exit(EXIT_SUCCESS);
     }
+    fclose(f);
+    close(socket_client);
   }
   return 0;
 }
