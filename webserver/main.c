@@ -44,14 +44,29 @@ void	bad_request(FILE *f){
   fprintf(f, "400 Bad request\r\n");
 }
 
+void	req_answer(FILE *f){
+  fprintf(f, "HTTP/1.1 200 OK\r\n");
+  fprintf(f, "Content-Length: 11327\r\n");
+  fprintf(f, "\r\n");
+  welcome_client(f);
+}
+
 
 void	answer(FILE  *socket_client){
   char buffer[BUFF_SIZE];
   
   
-  while (fgets(buffer, BUFF_SIZE, socket_client) != NULL){
-    if (
+  if (fgets(buffer, BUFF_SIZE, socket_client) != NULL){
+    if (checkget(buffer) == 0){
+      bad_request(socket_client);
+      return;
     }
+  }
+  while (fgets(buffer, BUFF_SIZE, socket_client) != NULL){
+    if (strncmp(buffer, "\r\n", 2) == 0)
+      break;
+  }
+  req_answer(socket_client);
 }
 
 void traitement_signal(int sig)
