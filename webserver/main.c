@@ -10,9 +10,7 @@
 #include <stdlib.h>
 #include "socket.h"
 
-
 #define BUFF_SIZE 1024
-
 
 void	welcome_client(FILE  *socket_client){
   char welcome[BUFF_SIZE];
@@ -34,7 +32,6 @@ void	welcome_client(FILE  *socket_client){
     fprintf(socket_client, "%s", welcome);
     }
   fclose(f);
-  close(fd);
 }
 
 void	answer(FILE  *socket_client){
@@ -70,9 +67,6 @@ void initialiser_signaux(void)
     perror("signal");
 }
 
-
-
-
 int	main(){
   int socket_serveur;
   int socket_client;
@@ -97,11 +91,9 @@ int	main(){
       //welcome_client(f);
       answer(f);
       fclose(f);
-      close(socket_client);
       exit(EXIT_SUCCESS);
     }
     fclose(f);
-    close(socket_client);
   }
   return 0;
 }
