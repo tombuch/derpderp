@@ -9,6 +9,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include "socket.h"
+#include "check_header.h"
 
 #define BUFF_SIZE 1024
 
@@ -34,11 +35,22 @@ void	welcome_client(FILE  *socket_client){
   fclose(f);
 }
 
+
+void	bad_request(FILE *f){
+  fprintf(f, "HTTP/1.1 400 Bad Request\r\n");
+  fprintf(f, "Connection: close\r\n");
+  fprintf(f, "Content-Length: 17\r\n");
+  fprintf(f, "\r\n");
+  fprintf(f, "400 Bad request\r\n");
+}
+
+
 void	answer(FILE  *socket_client){
   char buffer[BUFF_SIZE];
-
+  
+  
   while (fgets(buffer, BUFF_SIZE, socket_client) != NULL){
-    fprintf(stdout, "<Pawnee>%s", buffer);
+    if (
     }
 }
 

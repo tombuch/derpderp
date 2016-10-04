@@ -3,8 +3,12 @@
 #include "check_header.h"
 
 int checkget(char *str){
+
+  int i = 0;
   
   if(strncmp(str,"GET",3) == 0)
+    i = 1;
+  if((checkword(str) == 3) && i==1)
     return 1;
   return 0;
 }
