@@ -51,6 +51,14 @@ void	req_answer(FILE *f){
   welcome_client(f);
 }
 
+void	not_found(FILE *f){
+  fprintf(f, "HTTP/1.1 404 Not Found\r\n");
+  fprintf(f, "Connection: close\r\n");
+  fprintf(f, "Content-Length: 15\r\n");
+  fprintf(f, "\r\n");
+  fprintf(f, "404 Not Found\r\n");
+}
+
 
 void	answer(FILE  *socket_client){
   char buffer[BUFF_SIZE];
@@ -61,6 +69,10 @@ void	answer(FILE  *socket_client){
       bad_request(socket_client);
       return;
     }
+  }
+  if (strncmp(get_url(buffer), "/", 2) != 0){
+    not_found(socket_client);
+    return;
   }
   while (fgets(buffer, BUFF_SIZE, socket_client) != NULL){
     if (strncmp(buffer, "\r\n", 2) == 0)

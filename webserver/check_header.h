@@ -3,4 +3,5 @@
 
 int checkget(char *str);
 int checkvers(char *str);
+char * get_url(char *str);
 #endif
