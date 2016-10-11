@@ -8,10 +8,12 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
+#include "fgets_exit.h"
 #include "socket.h"
 #include "check_header.h"
+#include "http_request.h"
+#include "http_serv.h"
 
-#define BUFF_SIZE 1024
 
 void	welcome_client(FILE  *socket_client){
   char welcome[BUFF_SIZE];
@@ -29,56 +31,43 @@ void	welcome_client(FILE  *socket_client){
     {
       perror("fopen Welcome\n");
     }
-  while (fgets(welcome, BUFF_SIZE, f) != NULL){
+  while (fgets_or_exit(welcome, BUFF_SIZE, f) != NULL){
     fprintf(socket_client, "%s", welcome);
     }
   fclose(f);
 }
 
-
-void	bad_request(FILE *f){
-  fprintf(f, "HTTP/1.1 400 Bad Request\r\n");
-  fprintf(f, "Connection: close\r\n");
-  fprintf(f, "Content-Length: 17\r\n");
-  fprintf(f, "\r\n");
-  fprintf(f, "400 Bad request\r\n");
+void	send_status(FILE *client, int code, const char *reason_phrase){
+  fprintf(client, "HTTP/1.1 %d %s\r\n", code, reason_phrase);  
 }
 
-void	req_answer(FILE *f){
-  fprintf(f, "HTTP/1.1 200 OK\r\n");
-  fprintf(f, "Content-Length: 11327\r\n");
-  fprintf(f, "\r\n");
-  welcome_client(f);
+void	send_reponse(FILE *client, int code, const char *reason_phrase, const char *message_body){
+  send_status(client, code, reason_phrase);
+  fprintf(client, "Content-Length: %d\r\n", (int)strlen(message_body));
+  fprintf(client, "\r\n");
+  fprintf(client, "%s", message_body);
 }
-
-void	not_found(FILE *f){
-  fprintf(f, "HTTP/1.1 404 Not Found\r\n");
-  fprintf(f, "Connection: close\r\n");
-  fprintf(f, "Content-Length: 15\r\n");
-  fprintf(f, "\r\n");
-  fprintf(f, "404 Not Found\r\n");
-}
-
 
 void	answer(FILE  *socket_client){
   char buffer[BUFF_SIZE];
+  http_request request;
   
-  
-  if (fgets(buffer, BUFF_SIZE, socket_client) != NULL){
-    if (checkget(buffer) == 0){
-      bad_request(socket_client);
-      return;
-    }
-  }
-  if (strncmp(get_url(buffer), "/", 2) != 0){
-    not_found(socket_client);
+  fgets_or_exit(buffer, BUFF_SIZE, socket_client);
+  if (parse_http_request(buffer, &request) == 0){
+    send_reponse(socket_client, 400, "Bad Request", "Bad Request\r\n");
     return;
   }
-  while (fgets(buffer, BUFF_SIZE, socket_client) != NULL){
-    if (strncmp(buffer, "\r\n", 2) == 0)
-      break;
+  if (request.method == HTTP_UNSUPPORTED){
+    send_reponse(socket_client, 405, "Method Not Allowed", "Method Not Allowed\r\n");
+    return;
   }
-  req_answer(socket_client);
+  if (strncmp(request.target, "/", 2) != 0){
+    send_reponse(socket_client, 404, "Not Found", "Not Found\r\n");
+    return;
+  }
+  skip_headers(socket_client);
+  send_reponse(socket_client, 200, "OK", "Bonjour\r\n");
+  //  req_answer(socket_client);
 }
 
 void traitement_signal(int sig)

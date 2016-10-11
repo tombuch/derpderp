@@ -5,7 +5,42 @@
 #include "check_header.h"
 
 
-int checkget(char *str){
+int	parse_http_request(const char *request_line, http_request *request){
+
+  if (strncmp(request_line, "GET", 3) == 0){
+    request->method = HTTP_GET;
+  }
+  else
+    request->method = HTTP_UNSUPPORTED;
+  int i = 0;
+  while (!isspace(request_line[i]) && request_line[i])
+    i++;
+  if (!isspace(request_line[i]))
+    return 0;
+  i++;
+  while (!isspace(request_line[i]) && request_line[i])
+    i++;
+  if (!isspace(request_line[i]))
+    return 0;
+  i++;
+  if ((strncmp(&request_line[i], "HTTP/1.0", 8) != 0) && (strncmp(&request_line[i], "HTTP/1.1", 8) != 0))
+    return 0;
+  i += 8;
+  if (request_line[i] != '\n' && (request_line[i] != '\r' && request_line[i+1] != '\n'))
+    return 0;
+  char *str;
+  char *save = strdup(request_line);
+  str = strtok(save, " ");
+  str = strtok(NULL, " ");
+  request->target = str;
+  str = strtok(NULL, " ");
+  request->major_version = atoi(&str[5]);
+  request->minor_version = atoi(&str[7]);
+  return 1;
+}
+
+
+/*int checkget(char *str){
   int i = 0;
   
   if(strncmp(str,"GET",3) == 0)
@@ -59,3 +94,4 @@ char  *get_url(char *str){
   res[n] = '\0';
   return res;
 }
+*/
