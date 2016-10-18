@@ -46,6 +46,7 @@ void	send_reponse(FILE *client, int code, const char *reason_phrase, const char 
   fprintf(client, "Content-Length: %d\r\n", (int)strlen(message_body));
   fprintf(client, "\r\n");
   fprintf(client, "%s", message_body);
+  fflush(client);
 }
 
 void	answer(FILE  *socket_client){
@@ -53,20 +54,22 @@ void	answer(FILE  *socket_client){
   http_request request;
   
   fgets_or_exit(buffer, BUFF_SIZE, socket_client);
+  skip_headers(socket_client);
   if (parse_http_request(buffer, &request) == 0){
     send_reponse(socket_client, 400, "Bad Request", "Bad Request\r\n");
     return;
   }
   if (request.method == HTTP_UNSUPPORTED){
+    fprintf(stderr,"DEBUG");
     send_reponse(socket_client, 405, "Method Not Allowed", "Method Not Allowed\r\n");
     return;
   }
-  if (strncmp(request.target, "/", 2) != 0){
-    send_reponse(socket_client, 404, "Not Found", "Not Found\r\n");
+  else if (strncmp(request.target, "/", 2) == 0){
+    send_reponse(socket_client, 200, "OK", "Bonjour\r\n");
     return;
   }
-  skip_headers(socket_client);
-  send_reponse(socket_client, 200, "OK", "Bonjour\r\n");
+  else
+    send_reponse(socket_client, 404, "Not Found", "Not Found\r\n");
   //  req_answer(socket_client);
 }
 

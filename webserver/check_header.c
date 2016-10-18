@@ -39,7 +39,10 @@ int	parse_http_request(const char *request_line, http_request *request){
   return 1;
 }
 
+/*char	*rewrite_target(){
 
+}
+*/
 /*int checkget(char *str){
   int i = 0;
   
