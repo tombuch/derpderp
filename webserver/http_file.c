@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include "http_file.h"
+#include "http_serv.h"
+
+void	open_root(const char *path){
+  if (opendir(path) == NULL){
+    fprintf(stderr, "%s: is not a directory or can reach\n", path);
+    exit(EXIT_FAILURE);
+  }
+}
+
+int	copy(int in, int out){
+  char buffer[BUFF_SIZE];
+  int size = 0;
+  
+  while ((size = read(in, &buffer, BUFF_SIZE)) > 0){
+      write(out, &buffer, size);
+  }
+  return 0;
+}
+
+int	get_file_size(int fd){
+  struct  stat buf;
+
+  if (fstat(fd, &buf) != 0){
+    fprintf(stderr, "Fail fstat");
+    exit(EXIT_FAILURE);
+  }
+  return buf.st_size;
+}
+
+int	check_and_open(const char *target, const char *document_root){
+
+  char *str;
+
+  if ((str = malloc(sizeof(char) * (strlen(target)+strlen(document_root) +1))) == NULL)
+    {
+      fprintf(stderr, "fail alloc");
+      exit(EXIT_FAILURE);
+    }
+  int i = 0;
+  while (document_root[i])
+    {
+      str[i] = document_root[i];
+      i++;
+    }
+  int y = 0;
+  while (target[y]){
+    str[i] = target[y];
+    y++;
+    i++;
+  }
+  str[i] = '\0';
+  return open(str, O_RDONLY);
+}

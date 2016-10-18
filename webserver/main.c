@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
+#include "http_file.h"
 #include "fgets_exit.h"
 #include "socket.h"
 #include "check_header.h"
@@ -15,7 +16,7 @@
 #include "http_serv.h"
 
 
-void	welcome_client(FILE  *socket_client){
+/*void	welcome_client(FILE  *socket_client){
   char welcome[BUFF_SIZE];
   int fd;
   FILE *f;
@@ -35,7 +36,7 @@ void	welcome_client(FILE  *socket_client){
     fprintf(socket_client, "%s", welcome);
     }
   fclose(f);
-}
+  }*/
 
 void	send_status(FILE *client, int code, const char *reason_phrase){
   fprintf(client, "HTTP/1.1 %d %s\r\n", code, reason_phrase);  
@@ -70,7 +71,6 @@ void	answer(FILE  *socket_client){
   }
   else
     send_reponse(socket_client, 404, "Not Found", "Not Found\r\n");
-  //  req_answer(socket_client);
 }
 
 void traitement_signal(int sig)
@@ -98,12 +98,21 @@ void initialiser_signaux(void)
     perror("signal");
 }
 
-int	main(){
+int	main(int ac, char **av){
   int socket_serveur;
   int socket_client;
   pid_t pid;
   FILE *f;
-  
+
+  if (ac != 2){
+    if (ac > 2)
+      fprintf(stderr,"Too many arguments\n");
+    else
+      fprintf(stderr,"Enter a root directory\n");
+    return 1;
+  }
+  else
+    open_root(av[1]);
   initialiser_signaux();
   socket_serveur = creer_serveur(8080);
   if (socket_serveur == -1)

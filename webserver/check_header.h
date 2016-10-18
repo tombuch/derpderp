@@ -3,7 +3,8 @@
 
 #include "http_request.h"
 
-int parse_http_request(const char *request_line, http_request *request);
+int	parse_http_request(const char *request_line, http_request *request);
+char	*rewrite_target(char *target);
 
 /*int checkget(char *str);
 int checkvers(char *str);

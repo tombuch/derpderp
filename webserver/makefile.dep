@@ -1,0 +1,6 @@
+socket.o: socket.c socket.h
+check_header.o: check_header.c check_header.h http_request.h
+http_file.o: http_file.c http_file.h http_serv.h
+main.o: main.c http_file.h fgets_exit.h socket.h check_header.h \
+ http_request.h http_serv.h
+fgets_exit.o: fgets_exit.c http_serv.h fgets_exit.h

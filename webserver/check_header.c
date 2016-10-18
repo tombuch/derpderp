@@ -32,17 +32,25 @@ int	parse_http_request(const char *request_line, http_request *request){
   char *save = strdup(request_line);
   str = strtok(save, " ");
   str = strtok(NULL, " ");
-  request->target = str;
+  request->target = rewrite_target(str);
+  fprintf(stderr, "%s\n", request->target);
   str = strtok(NULL, " ");
   request->major_version = atoi(&str[5]);
   request->minor_version = atoi(&str[7]);
   return 1;
 }
 
-/*char	*rewrite_target(){
+char	*rewrite_target(char *target){
 
+  int i = 0;  
+  while (target[i] != '\0'){
+    if (target[i] == '?')
+      target[i] = '\0';
+    i++;
+  }
+  return target;
 }
-*/
+
 /*int checkget(char *str){
   int i = 0;
   
